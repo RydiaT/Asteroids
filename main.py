@@ -43,6 +43,12 @@ def main():
 			if thing.is_colliding(player):
 				exit("Game over!")
 
+		for thing in asteroids:
+			for bullet in shots:
+				if thing.is_colliding(bullet):
+					thing.split()
+					bullet.kill()
+
 		# Render
 		screen.fill("black")
 
