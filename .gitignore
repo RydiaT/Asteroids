@@ -11,5 +11,4 @@ wheels/
 
 # Other
 .python-version
-constants.py
 pyproject.toml
