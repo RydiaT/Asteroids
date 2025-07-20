@@ -1,5 +1,6 @@
 from colorama import Fore, Style
 import os.path
+from random import uniform
 
 def cprint(message, message_type="info"):
 	prefix = ""
@@ -50,3 +51,10 @@ def on_exit(score, highscore):
 		print("\n=====================================\n")
 
 		set_highscore(score)
+
+def generate_bright_color():
+	red = uniform(150, 255)
+	blue = uniform(150, 255)
+	green = uniform(150, 255)
+
+	return red, blue, green

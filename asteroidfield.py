@@ -2,6 +2,7 @@ import pygame
 import random
 from asteroid import Asteroid
 from constants import *
+from helpers import generate_bright_color
 
 
 class AsteroidField(pygame.sprite.Sprite):
@@ -33,7 +34,7 @@ class AsteroidField(pygame.sprite.Sprite):
         self.spawn_timer = 0.0
 
     def spawn(self, radius, position, velocity):
-        asteroid = Asteroid(position.x, position.y, radius)
+        asteroid = Asteroid(position.x, position.y, radius, generate_bright_color())
         asteroid.velocity = velocity
 
     def update(self, dt):

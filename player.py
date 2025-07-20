@@ -4,6 +4,7 @@ from constants import PLAYER_RADIUS, PLAYER_TURN_SPEED, PLAYER_MOVE_SPEED, PLAYE
     FIRE_RATE_DURATION, SPEED_DURATION
 import pygame
 from particle import create_cloud
+from helpers import generate_bright_color
 
 
 class Player(CircleShape):
@@ -39,10 +40,7 @@ class Player(CircleShape):
 
                 color = (255, 255, int(blue))
             elif self.speed_timer > 0:
-                red = 255 - (255 * (self.speed_timer / SPEED_DURATION))
-                blue = 255 - (255 * (self.speed_timer / SPEED_DURATION))
-
-                color = (int(red), 255, int(blue))
+                color = generate_bright_color()
             else:
                 color = "white"
 
