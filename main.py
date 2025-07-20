@@ -8,6 +8,7 @@ from sys import exit
 from colorama import init
 from helpers import cprint, get_highscore, set_highscore, on_exit
 from particle import Particle
+from powerup import Powerup
 
 init()
 
@@ -36,9 +37,11 @@ def main():
 	AsteroidField.containers = (updatable,)
 	Shot.containers = (shots, updatable, drawable)
 	Particle.containers = (updatable, drawable)
+	Powerup.containers = (drawable, )
 
 	player = Player(SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2)
 	field = AsteroidField()
+	powerup = Powerup()
 
 	score = 0
 	highscore = get_highscore()
@@ -57,11 +60,14 @@ def main():
 		if not player.dying:
 			for thing in asteroids:
 				if thing.is_colliding(player):
-					on_exit(score, highscore)
-					player.game_over()
+					if not player.shielded and player.immune_timer <= 0:
+						on_exit(score, highscore)
+						player.game_over()
 
-					death_timer = PLAYER_DEATH_TIMER
-					player.dying = True
+						death_timer = PLAYER_DEATH_TIMER
+						player.dying = True
+					else:
+						player.shielded = False
 
 			for thing in asteroids:
 				for bullet in shots:
@@ -70,6 +76,12 @@ def main():
 						bullet.kill()
 
 						score += 1
+
+			if player.is_colliding(powerup):
+				player.shielded = True
+				player.immune_timer = PLAYER_I_SECONDS
+				powerup.reset()
+
 		else:
 			death_timer -= dt
 

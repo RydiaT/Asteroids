@@ -13,6 +13,9 @@ class Player(CircleShape):
         self.shot_timer = 0
 
         self.dying = False
+        self.shielded = False
+
+        self.immune_timer = 0
 
     # in the player class
     def triangle(self):
@@ -25,7 +28,14 @@ class Player(CircleShape):
 
     def draw(self, screen):
         if not self.dying:
-            pygame.draw.polygon(screen, "white", self.triangle(), 2)
+            if self.shielded:
+                color = (0, 0, 255)
+            elif self.immune_timer > 0:
+                color = (102, 102, 102)
+            else:
+                color = "white"
+
+            pygame.draw.polygon(screen, color, self.triangle(), 2)
 
     def rotate(self, dt):
         self.rotation += PLAYER_TURN_SPEED * dt
@@ -49,6 +59,9 @@ class Player(CircleShape):
 
     def update(self, dt):
         self.shot_timer -= dt
+
+        if not self.shielded:
+            self.immune_timer -= dt
 
         keys = pygame.key.get_pressed()
 
