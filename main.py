@@ -43,6 +43,8 @@ def main():
 	score = 0
 	highscore = get_highscore()
 
+	death_timer = 0
+
 	while True:
 		# Lets us actually use the [X] button
 		for event in pygame.event.get():
@@ -52,21 +54,29 @@ def main():
 		# Update
 		updatable.update(dt)
 
-		for thing in asteroids:
-			if thing.is_colliding(player):
-				on_exit(score, highscore)
+		if not player.dying:
+			for thing in asteroids:
+				if thing.is_colliding(player):
+					on_exit(score, highscore)
+					player.game_over()
 
-				cprint("Game over!", "error")
+					death_timer = PLAYER_DEATH_TIMER
+					player.dying = True
 
-				exit()
+			for thing in asteroids:
+				for bullet in shots:
+					if thing.is_colliding(bullet):
+						thing.split()
+						bullet.kill()
 
-		for thing in asteroids:
-			for bullet in shots:
-				if thing.is_colliding(bullet):
-					thing.split()
-					bullet.kill()
+						score += 1
+		else:
+			death_timer -= dt
 
-					score += 1
+		if death_timer <= 0 and player.dying:
+			cprint("Game over!", "error")
+
+			exit()
 
 		# Render
 		screen.fill("black")
