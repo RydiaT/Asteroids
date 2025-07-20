@@ -41,3 +41,12 @@ def get_highscore():
 def set_highscore(score):
 	with open("highscore.txt", "w") as score_raw:
 		score_raw.write(f"{score}")
+
+def on_exit(score, highscore):
+	if score > highscore:
+		cprint("NEW HIGHSCORE!!!!", "success")
+		cprint(f"{highscore} ───▶ {score}", "warning")
+
+		print("\n=====================================\n")
+
+		set_highscore(score)
