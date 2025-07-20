@@ -61,6 +61,8 @@ def main():
 		# Update
 		updatable.update(dt)
 
+		speed.move(player, dt)
+
 		if not player.dying:
 			for thing in asteroids:
 				if thing.is_colliding(player):
