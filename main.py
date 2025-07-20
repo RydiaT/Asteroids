@@ -1,5 +1,3 @@
-import os.path
-
 import pygame
 from constants import *
 from player import Player
@@ -8,7 +6,8 @@ from asteroidfield import AsteroidField
 from shot import Shot
 from sys import exit
 from colorama import init
-from helpers import cprint, get_highscore, set_highscore
+from helpers import cprint, get_highscore, set_highscore, on_exit
+from particle import Particle
 
 init()
 
@@ -20,7 +19,9 @@ def main():
 	pygame.init()
 	screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
 
-	font = pygame.font.SysFont('Arial', 36)  # Using a system font, size 36
+	score_font = pygame.font.SysFont('Arial', 36)  # Using a system font, size 36
+	highscore_font = pygame.font.SysFont('Arial', 20)  # Using a system font, size 36
+
 
 	clock = pygame.time.Clock()
 	dt = 0
@@ -34,6 +35,7 @@ def main():
 	Asteroid.containers = (asteroids, updatable, drawable)
 	AsteroidField.containers = (updatable,)
 	Shot.containers = (shots, updatable, drawable)
+	Particle.containers = (updatable, drawable)
 
 	player = Player(SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2)
 	field = AsteroidField()
@@ -45,21 +47,17 @@ def main():
 		# Lets us actually use the [X] button
 		for event in pygame.event.get():
 			if event.type == pygame.QUIT:
+				on_exit(score, highscore)
 				return
 		# Update
 		updatable.update(dt)
 
 		for thing in asteroids:
 			if thing.is_colliding(player):
-				if score > highscore:
-					cprint("NEW HIGHSCORE!!!!", "success")
-					cprint(f"{highscore} ───▶ {score}", "warning")
-
-					print("\n=====================================\n")
-
-					set_highscore(score)
+				on_exit(score, highscore)
 
 				cprint("Game over!", "error")
+
 				exit()
 
 		for thing in asteroids:
@@ -78,11 +76,16 @@ def main():
 		else:
 			text_color = "white"
 
-		text_surface = font.render(f"{score}", True, text_color)
-		text_rect = text_surface.get_rect()
-		text_rect.center = (SCREEN_WIDTH // 2, SCREEN_HEIGHT // 2)  # Center it on the screen
+		score_surface = score_font.render(f"{score}", True, text_color)
+		score_rext = score_surface.get_rect()
+		score_rext.center = (SCREEN_WIDTH // 2, SCREEN_HEIGHT // 2)  # Center it on the screen
 
-		screen.blit(text_surface, text_rect)
+		highscore_surface = highscore_font.render(f"{highscore}", True, "grey")
+		highscore_rext = highscore_surface.get_rect()
+		highscore_rext.center = (SCREEN_WIDTH // 2, (SCREEN_HEIGHT // 2) + 25)  # Center it on the screen
+
+		screen.blit(score_surface, score_rext)
+		screen.blit(highscore_surface, highscore_rext)
 
 		for thing in drawable:
 			thing.draw(screen)
