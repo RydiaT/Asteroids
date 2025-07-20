@@ -31,17 +31,21 @@ def main():
 	drawable = pygame.sprite.Group()
 	asteroids = pygame.sprite.Group()
 	shots = pygame.sprite.Group()
+	powerups = pygame.sprite.Group()
 
 	Player.containers = (updatable, drawable)
 	Asteroid.containers = (asteroids, updatable, drawable)
 	AsteroidField.containers = (updatable,)
 	Shot.containers = (shots, updatable, drawable)
 	Particle.containers = (updatable, drawable)
-	Powerup.containers = (drawable, )
+	Powerup.containers = (powerups, drawable )
 
 	player = Player(SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2)
 	field = AsteroidField()
-	powerup = Powerup()
+
+	shield = Powerup("shield")
+	fire_rate = Powerup("shot", (255, 0, 0))
+	speed = Powerup("speed", (0, 255, 0))
 
 	score = 0
 	highscore = get_highscore()
@@ -77,10 +81,17 @@ def main():
 
 						score += 1
 
-			if player.is_colliding(powerup):
-				player.shielded = True
-				player.immune_timer = PLAYER_I_SECONDS
-				powerup.reset()
+			for powerup in powerups:
+				if player.is_colliding(powerup):
+					if powerup.type == "shield":
+						player.shielded = True
+						player.immune_timer = SHIELD_DURATION
+					elif powerup.type == "shot":
+						player.fire_rate_timer = FIRE_RATE_DURATION
+					elif powerup.type == "speed":
+						player.speed_timer = SPEED_DURATION
+
+					powerup.reset()
 
 		else:
 			death_timer -= dt

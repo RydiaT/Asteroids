@@ -1,6 +1,7 @@
 from circleshape import CircleShape
 from shot import Shot
-from constants import PLAYER_RADIUS, PLAYER_TURN_SPEED, PLAYER_MOVE_SPEED, PLAYER_SHOOT_SPEED, SHOT_COOLDOWN
+from constants import PLAYER_RADIUS, PLAYER_TURN_SPEED, PLAYER_MOVE_SPEED, PLAYER_SHOOT_SPEED, SHOT_COOLDOWN, \
+    FIRE_RATE_DURATION, SPEED_DURATION
 import pygame
 from particle import create_cloud
 
@@ -11,11 +12,12 @@ class Player(CircleShape):
         self.rotation = 0
 
         self.shot_timer = 0
+        self.immune_timer = 0
+        self.fire_rate_timer = 0
+        self.speed_timer = 0
 
         self.dying = False
         self.shielded = False
-
-        self.immune_timer = 0
 
     # in the player class
     def triangle(self):
@@ -32,6 +34,15 @@ class Player(CircleShape):
                 color = (0, 0, 255)
             elif self.immune_timer > 0:
                 color = (102, 102, 102)
+            elif self.fire_rate_timer > 0:
+                blue = 255 - (255 * (self.fire_rate_timer / FIRE_RATE_DURATION))
+
+                color = (255, 255, int(blue))
+            elif self.speed_timer > 0:
+                red = 255 - (255 * (self.speed_timer / SPEED_DURATION))
+                blue = 255 - (255 * (self.speed_timer / SPEED_DURATION))
+
+                color = (int(red), 255, int(blue))
             else:
                 color = "white"
 
@@ -46,6 +57,9 @@ class Player(CircleShape):
 
         start *= PLAYER_MOVE_SPEED * dt
 
+        if self.speed_timer > 0:
+            start *= 3
+
         self.position += start
 
     def shoot(self):
@@ -59,6 +73,8 @@ class Player(CircleShape):
 
     def update(self, dt):
         self.shot_timer -= dt
+        self.fire_rate_timer -= dt
+        self.speed_timer -= dt
 
         if not self.shielded:
             self.immune_timer -= dt
@@ -79,4 +95,7 @@ class Player(CircleShape):
             if not (self.shot_timer > 0):
                 self.shoot()
 
-                self.shot_timer = SHOT_COOLDOWN
+                if self.fire_rate_timer <= 0:
+                    self.shot_timer = SHOT_COOLDOWN
+                else:
+                    self.shot_timer = SHOT_COOLDOWN / 2
