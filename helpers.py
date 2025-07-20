@@ -1,4 +1,5 @@
 from colorama import Fore, Style
+import os.path
 
 def cprint(message, message_type="info"):
 	prefix = ""

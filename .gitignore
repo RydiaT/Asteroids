@@ -11,5 +11,4 @@ wheels/
 
 # Other
 .python-version
-pyproject.toml
 highscore.txt
