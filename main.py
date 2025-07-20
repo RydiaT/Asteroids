@@ -7,15 +7,35 @@ from asteroid import Asteroid
 from asteroidfield import AsteroidField
 from shot import Shot
 from sys import exit
+from colorama import init, Fore, Style
+
+init()
+
+
+def cprint(message, message_type="info"):
+	prefix = ""
+	if message_type == "info":
+		prefix = Fore.CYAN
+	elif message_type == "warning":
+		prefix = Fore.YELLOW
+	elif message_type == "error":
+		prefix = Fore.RED
+	elif message_type == "success":
+		prefix = Fore.GREEN
+
+	print(prefix + message + Style.RESET_ALL)
+
 
 def get_highscore():
 	if not os.path.exists("highscore.txt"):
-		print("No highscore file found.")
+		cprint("No highscore file found.", "warning")
+
 		f = open("highscore.txt", "x")
 		f = open("highscore.txt", "w")
 		f.write("0")
 		f.close()
-		print("Highscore save created.")
+
+		cprint("Highscore save created.", "info")
 		print("\n=====================================\n")
 
 	with open("highscore.txt", "r") as score_raw:
@@ -24,7 +44,7 @@ def get_highscore():
 		try:
 			return int(score)
 		except ValueError:
-			print("Highscore unable to be read.")
+			cprint("Highscore unable to be read.", "error")
 			print(score)
 			print(type(score))
 			return -1
@@ -36,7 +56,7 @@ def set_highscore(score):
 
 
 def main():
-	print("\nStarting Asteroids!")
+	cprint("\nStarting Asteroids!", "info")
 
 	print("\n=====================================\n")
 
@@ -75,12 +95,15 @@ def main():
 		for thing in asteroids:
 			if thing.is_colliding(player):
 				if score > highscore:
-					print("NEW HIGHSCORE!!!!")
-					print(f"{highscore} ---> {score}")
+					cprint("NEW HIGHSCORE!!!!", "success")
+					cprint(f"{highscore} ───▶ {score}", "warning")
+
+					print("\n=====================================\n")
 
 					set_highscore(score)
 
-				exit("Game over!")
+				cprint("Game over!", "error")
+				exit()
 
 		for thing in asteroids:
 			for bullet in shots:
